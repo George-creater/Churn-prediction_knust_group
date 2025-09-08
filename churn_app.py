@@ -1,9 +1,10 @@
 import streamlit as st
 import pandas as pd
-import joblib
+import xgboost as xgb
 
 # Load the trained model
-model = joblib.load("xgboost_churn_model_tuned.pkl")
+model = xgb.Booster()
+model.load_model("churn_model.json")
 
 # Streamlit UI
 st.title("📊 Churn Prediction App")
@@ -28,7 +29,7 @@ total_eve_calls = st.number_input("Total Evening Calls", min_value=0)
 
 # Prediction logic
 if st.button("Predict Churn"):
-    # Build full input data (padding irrelevant features with zeros)
+    # Build input row
     input_data = pd.DataFrame([{
         "account_length": 0,
         "area_code": area_code,
@@ -52,7 +53,7 @@ if st.button("Predict Churn"):
         "number_customer_service_calls": number_customer_service_calls
     }])
 
-    # Ensure feature order matches training
+    # Match training feature order
     expected_features = [
         'account_length', 'area_code', 'international_plan', 'total_intl_minutes',
         'total_intl_calls', 'voice_mail_plan', 'number_vmail_messages',
@@ -64,11 +65,14 @@ if st.button("Predict Churn"):
     ]
     input_data = input_data[expected_features]
 
-    # Get prediction and probability
-    prediction = model.predict(input_data)[0]
-    probability = model.predict_proba(input_data)[0][1]  # Probability of churn
+    # Convert to DMatrix
+    dmatrix = xgb.DMatrix(input_data)
+
+    # Get prediction probabilities
+    prob = model.predict(dmatrix)[0]   # booster.predict gives probabilities for binary:logistic
+    prediction = 1 if prob >= 0.5 else 0
 
     # Display results
     label = "Churn" if prediction == 1 else "No Churn"
     st.success(f"Prediction: {label}")
-    st.info(f"Churn Probability: {probability:.2%}")
+    st.info(f"Churn Probability: {prob:.2%}")
