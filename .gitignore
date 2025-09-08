@@ -1,34 +1,19 @@
-# Byte-compiled / cache
+# Byte-compiled / optimized files
 __pycache__/
-*.py[cod]
-*.so
+*.pyc
 
-# Virtual environments
-.env
-.venv
+# Jupyter notebooks checkpoints
+.ipynb_checkpoints/
+
+# Environment folders
 env/
 venv/
-ENV/
-env.bak/
-venv.bak/
+*.conda
+*.egg-info/
 
-# Jupyter
-.ipynb_checkpoints
-*.ipynb_checkpoints/
-
-# OS junk
+# OS files
 .DS_Store
-Thumbs.db
 
-# Logs
-*.log
-
-# Model files (optional: remove if you *want* them in Git)
-*.pkl
-*.joblib
-*.h5
-*.pt
-*.onnx
-
-# Streamlit secrets
-.streamlit/secrets.toml
+# Optional: model files you don't want on GitHub
+# xgboost_churn_model_tuned.pkl
+# churn_model.json
